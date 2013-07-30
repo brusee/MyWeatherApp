@@ -48,12 +48,14 @@ public class WeatherTask extends AsyncTask<Double, Void, Weather> {
 			// Create a new list of name-pair values to use as parameters in the request
 			List<NameValuePair> pairs = new ArrayList<NameValuePair>();
 			// Add the name and friend's name
+			
+			pairs.add(new BasicNameValuePair("APPID",   "<PUT YOUR API KEY HERE>"));
 			pairs.add(new BasicNameValuePair("lat",  String.valueOf(latitude) ));
 			pairs.add(new BasicNameValuePair("lon",   String.valueOf(longitude)));
 			pairs.add(new BasicNameValuePair("lang",  "sp"));
+			pairs.add(new BasicNameValuePair("units",  "metric"));
 			
 			
-			pairs.add(new BasicNameValuePair("APPID",   "de75a4287fa0d1f921d217c36eff93c6"));
 			
 			// Create a new URL
 			URL url = new URL("http://api.openweathermap.org/data/2.5/weather" +"?"+ URLEncodedUtils.format(pairs,"utf-8"));
@@ -92,8 +94,6 @@ public class WeatherTask extends AsyncTask<Double, Void, Weather> {
         	//Generate the jsonObject form respobnse
         	JSONObject jsonObject = new JSONObject(response);
         	
-        	
-        	
         	weather = new Weather();
         	
         	weather.setWName(jsonObject.getString("name"));
@@ -117,8 +117,6 @@ public class WeatherTask extends AsyncTask<Double, Void, Weather> {
         	JSONObject object3 = jsonObject.getJSONObject("wind");
         	weather.setSpeed(object3.getString("speed"));
         	weather.setDeg(object3.getString("deg"));
-        	
-        	
         	
         } catch (JSONException e) {
             Log.e("JSON Parser", "Error parsing data " + e.toString());
