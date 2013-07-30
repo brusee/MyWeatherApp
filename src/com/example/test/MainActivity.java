@@ -36,29 +36,23 @@ public class MainActivity extends Activity {
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.void_layout);
         
+    	super.onCreate(savedInstanceState);
         
-        //call the main layout from xml
+    	boolean providerEnable = false;
+    	
+        setContentView(R.layout.activity_main);
+        
+      //call the main layout from xml
         LinearLayout voidLayout = (LinearLayout)findViewById(R.id.voidlayout);
  
         //create a view to inflate the layout_item (the xml with the textView created before)
         View view = getLayoutInflater().inflate(R.layout.activity_main, voidLayout,false);
  
-        //add the view to the main layout
-        voidLayout.addView(view);
+        LinearLayout mainLayout = (LinearLayout)findViewById(R.id.mainlayout);
+        mainLayout.setVisibility(View.INVISIBLE);
         
-        /*
-        dialog = new ProgressDialog(this);
-        dialog.setMessage("Descargando...");
-        dialog.setTitle("Progreso");
-        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        dialog.setCancelable(false);
-        */
-        //country = Locale.getDefault().getCountry();
         
-        //visor = (TextView) findViewById(R.id.visor);
         
         // Get a LocationManager, its listener and a Geocoder
 		manager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -68,7 +62,7 @@ public class MainActivity extends Activity {
         
         Log.d("app","Probando GEO Localizaci—n");
         
-    
+        
         //Inicalizamos los servicions
         // If the GPS_PROVIDER is enable use it
 		if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
@@ -77,6 +71,7 @@ public class MainActivity extends Activity {
 			manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
 			Toast.makeText(this, LocationManager.GPS_PROVIDER, Toast.LENGTH_SHORT).show();
 			
+			providerEnable=true;
 			//Obtenemos la localizaci—n actual al iniciar
 			Location currentLocation = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);   
 		    latitude = currentLocation.getLatitude();
@@ -89,25 +84,31 @@ public class MainActivity extends Activity {
 			manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, listener);
 			Toast.makeText(this, LocationManager.NETWORK_PROVIDER, Toast.LENGTH_SHORT).show();
 			
+			providerEnable=true;
+			
 			//Obtenemos la localizaci—n actual al iniciar
 			Location currentLocation = manager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);   
 		    latitude = currentLocation.getLatitude();
 		    longitude = currentLocation.getLongitude();
 			
 		}
+		//Check if the provider in enable
+		if (providerEnable) {
+			Log.d("app","Provider enable");
+			//dialog.show(); 
+			showLocation();
+			
+			WeatherTask wt = new WeatherTask();
+			//A–adimos una referentcia del padre
+			wt.setContext(this);
+			wt.execute(latitude,longitude);
+		}
+		else {
+			Toast.makeText(this, "No disponemos del servicio de geolocalizaci—n", Toast.LENGTH_SHORT).show();
+		}
 		
 		
 		
-		Log.d("app","Location");
-		
-		
-		//dialog.show(); 
-		showLocation();
-		
-		WeatherTask wt = new WeatherTask();
-		//A–adimos una referentcia del padre
-		wt.setContext(this);
-		wt.execute(latitude,longitude);
         
     }
     
@@ -162,6 +163,8 @@ public class MainActivity extends Activity {
     	((TextView) findViewById(R.id.deg)).setText(w.getDeg());
     	((TextView) findViewById(R.id.speed)).setText(w.getSpeed());
     	
+    	LinearLayout mainLayout = (LinearLayout)findViewById(R.id.mainlayout);
+        mainLayout.setVisibility(View.VISIBLE);
     }
   
     // Listener for managing location changes
@@ -173,11 +176,7 @@ public class MainActivity extends Activity {
  			// Update the information in the interface "longitude,latitude"
  			longitude = location.getLongitude();
  			latitude = location.getLatitude();
- 			showLocation();
- 			WeatherTask wt = new WeatherTask();
- 			//A–adimos una referentcia del padre
  			
- 			wt.execute(latitude,longitude);
  		}
 
  		@Override

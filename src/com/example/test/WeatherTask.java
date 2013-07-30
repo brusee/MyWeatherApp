@@ -92,8 +92,6 @@ public class WeatherTask extends AsyncTask<Double, Void, Weather> {
         	//Generate the jsonObject form respobnse
         	JSONObject jsonObject = new JSONObject(response);
         	
-        	
-        	
         	weather = new Weather();
         	
         	weather.setWName(jsonObject.getString("name"));
@@ -117,8 +115,6 @@ public class WeatherTask extends AsyncTask<Double, Void, Weather> {
         	JSONObject object3 = jsonObject.getJSONObject("wind");
         	weather.setSpeed(object3.getString("speed"));
         	weather.setDeg(object3.getString("deg"));
-        	
-        	
         	
         } catch (JSONException e) {
             Log.e("JSON Parser", "Error parsing data " + e.toString());
