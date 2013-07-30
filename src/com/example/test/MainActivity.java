@@ -101,7 +101,9 @@ public class MainActivity extends Activity {
 			WeatherTask wt = new WeatherTask();
 			//A–adimos una referentcia del padre
 			wt.setContext(this);
-			wt.execute(latitude,longitude);
+			wt.setLatitude(latitude);
+			wt.setLongitude(longitude);
+			wt.execute();
 		}
 		else {
 			Toast.makeText(this, "No disponemos del servicio de geolocalizaci—n", Toast.LENGTH_SHORT).show();
@@ -176,7 +178,10 @@ public class MainActivity extends Activity {
  			// Update the information in the interface "longitude,latitude"
  			longitude = location.getLongitude();
  			latitude = location.getLatitude();
- 			
+ 			wt.setLatitude(latitude);
+			wt.setLongitude(longitude);
+			//Indicate to the task that it must continue
+			wt.setFinish(false);
  		}
 
  		@Override
