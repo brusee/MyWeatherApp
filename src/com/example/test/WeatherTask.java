@@ -48,12 +48,14 @@ public class WeatherTask extends AsyncTask<Double, Void, Weather> {
 			// Create a new list of name-pair values to use as parameters in the request
 			List<NameValuePair> pairs = new ArrayList<NameValuePair>();
 			// Add the name and friend's name
+			
+			pairs.add(new BasicNameValuePair("APPID",   "<PUT YOUR API KEY HERE>"));
 			pairs.add(new BasicNameValuePair("lat",  String.valueOf(latitude) ));
 			pairs.add(new BasicNameValuePair("lon",   String.valueOf(longitude)));
 			pairs.add(new BasicNameValuePair("lang",  "sp"));
+			pairs.add(new BasicNameValuePair("units",  "metric"));
 			
 			
-			pairs.add(new BasicNameValuePair("APPID",   "de75a4287fa0d1f921d217c36eff93c6"));
 			
 			// Create a new URL
 			URL url = new URL("http://api.openweathermap.org/data/2.5/weather" +"?"+ URLEncodedUtils.format(pairs,"utf-8"));

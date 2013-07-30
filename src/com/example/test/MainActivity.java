@@ -26,7 +26,8 @@ public class MainActivity extends Activity {
 	LocationManager manager = null;
 	LocationListener listener = null;
 	Geocoder geocoder = null;
-
+	
+	Context cont = this;
 	
 	double longitude;
 	double latitude;
@@ -52,46 +53,51 @@ public class MainActivity extends Activity {
         LinearLayout mainLayout = (LinearLayout)findViewById(R.id.mainlayout);
         mainLayout.setVisibility(View.INVISIBLE);
         
-        
-        
-        // Get a LocationManager, its listener and a Geocoder
-		manager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-		listener = new MyLocationListener();
-		geocoder = new Geocoder(this);
-        
-        
         Log.d("app","Probando GEO Localizaci—n");
         
+        try
+        {
         
-        //Inicalizamos los servicions
-        // If the GPS_PROVIDER is enable use it
-		if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-
-			// Location updates provided by the GPS_PROVIDER should be handled by the provide listener
-			manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
-			Toast.makeText(this, LocationManager.GPS_PROVIDER, Toast.LENGTH_SHORT).show();
-			
-			providerEnable=true;
-			//Obtenemos la localizaci—n actual al iniciar
-			Location currentLocation = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);   
-		    latitude = currentLocation.getLatitude();
-		    longitude = currentLocation.getLongitude();
-			
-		}
-		// Otherwise, if the NETWORK_PROVIDER is enabled use it
-		else if (manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-			// Location updates provided by the NETWORK_PROVIDER should be handled by the provide listener
-			manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, listener);
-			Toast.makeText(this, LocationManager.NETWORK_PROVIDER, Toast.LENGTH_SHORT).show();
-			
-			providerEnable=true;
-			
-			//Obtenemos la localizaci—n actual al iniciar
-			Location currentLocation = manager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);   
-		    latitude = currentLocation.getLatitude();
-		    longitude = currentLocation.getLongitude();
-			
-		}
+	        // Get a LocationManager, its listener and a Geocoder
+			manager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+			listener = new MyLocationListener();
+			geocoder = new Geocoder(this);
+	        
+	        //Inicalizamos los servicions
+	        // If the GPS_PROVIDER is enable use it
+			if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+	
+				// Location updates provided by the GPS_PROVIDER should be handled by the provide listener
+				manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 15000, 0, listener);
+				Toast.makeText(this, LocationManager.GPS_PROVIDER, Toast.LENGTH_SHORT).show();
+				
+				providerEnable=true;
+				//Obtenemos la localizaci—n actual al iniciar
+				Location currentLocation = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);   
+			    latitude = currentLocation.getLatitude();
+			    longitude = currentLocation.getLongitude();
+				
+			}
+			// Otherwise, if the NETWORK_PROVIDER is enabled use it
+			else if (manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+				// Location updates provided by the NETWORK_PROVIDER should be handled by the provide listener
+				manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 15000, 0, listener);
+				Toast.makeText(this, LocationManager.NETWORK_PROVIDER, Toast.LENGTH_SHORT).show();
+				
+				providerEnable=true;
+				
+				//Obtenemos la localizaci—n actual al iniciar
+				Location currentLocation = manager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);   
+			    latitude = currentLocation.getLatitude();
+			    longitude = currentLocation.getLongitude();
+				
+			}
+        }
+        catch(Exception e) {
+        	 e.printStackTrace();
+        }
+        
+        
 		//Check if the provider in enable
 		if (providerEnable) {
 			Log.d("app","Provider enable");
@@ -110,6 +116,19 @@ public class MainActivity extends Activity {
 		
 		
         
+    }
+    
+    @Override
+    protected void onPause() {
+    	super.onPause();
+    	//Stops the GPS
+    	manager.removeUpdates(listener);
+    }
+    
+    @Override
+    protected void onResume() {
+    	super.onResume();
+    	//Starts the GPS
     }
     
     private void log(String text){
@@ -176,7 +195,11 @@ public class MainActivity extends Activity {
  			// Update the information in the interface "longitude,latitude"
  			longitude = location.getLongitude();
  			latitude = location.getLatitude();
- 			
+ 			showLocation();
+ 			WeatherTask wt = new WeatherTask();
+			//A–adimos una referentcia del padre
+			wt.setContext(cont);
+			wt.execute(latitude,longitude);
  		}
 
  		@Override
